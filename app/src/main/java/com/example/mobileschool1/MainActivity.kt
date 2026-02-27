@@ -51,7 +51,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.mobileschool1.models.TodoItem
 import com.example.mobileschool1.ui.theme.MobileSchool1Theme
+import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
 
@@ -60,32 +66,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MobileSchool1Theme {
+                val navController = rememberNavController()
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 16.dp)
                 ) { innerPadding ->
-                    TodoListScreen(modifier = Modifier.padding(innerPadding))
+                    NavHost(
+                        navController = navController,
+                        startDestination = "ToDoList"
+                    )
+                    {
+                        composable("ToDoList"){
+                            TodoListScreen(modifier = Modifier.padding(innerPadding), navController = navController)
+                        }
+                        composable("ToDoDetails"){
+                            Text(text = "Placeholder", modifier = Modifier.padding())
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-data class TodoItem(
-    val id: Long,
-    var name: String,
-    var isCompleted: Boolean
-)
-
 @Composable
 fun TodoItemCard(
     todo: TodoItem,
     onToggleComplete: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
-        onClick = {},
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
@@ -112,7 +125,7 @@ fun TodoItemCard(
 }
 
 @Composable
-fun TodoListScreen(modifier: Modifier = Modifier) {
+fun TodoListScreen(modifier: Modifier = Modifier, navController: NavController) {
     var todoText by remember { mutableStateOf("") }
     val todoItems = remember { mutableStateListOf<TodoItem>() }
 
@@ -161,7 +174,10 @@ fun TodoListScreen(modifier: Modifier = Modifier) {
                     todoItems[index] = todoItem.copy(isCompleted = !todoItem.isCompleted )
                 }, onDelete = {
                     todoItems.remove(todoItem)
-                })
+                },
+                    onClick = {
+                        navController.navigate("ToDoDetails")
+                    })
             }
         }
     }
@@ -174,6 +190,7 @@ fun TodoItemCardPreview() {
         TodoItemCard(
             todo = TodoItem(id = 1, name = "test", isCompleted = false),
             onToggleComplete = {},
-            onDelete = {})
+            onDelete = {},
+            onClick = {})
     }
 }
