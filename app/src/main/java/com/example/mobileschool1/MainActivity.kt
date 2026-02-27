@@ -1,5 +1,6 @@
 package com.example.mobileschool1
 
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -55,7 +55,6 @@ import com.example.mobileschool1.ui.theme.MobileSchool1Theme
 
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -86,6 +85,7 @@ fun TodoItemCard(
     onDelete: () -> Unit
 ) {
     Card(
+        onClick = {},
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)

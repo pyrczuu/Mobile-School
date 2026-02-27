@@ -8,9 +8,10 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mobileschoole1"
-    compileSdk = 36
-
+    namespace = "com.example.mobileschool1"
+    compileSdk {
+        version = release(36)
+    }
     defaultConfig {
         applicationId = "com.example.mobileschool1"
         minSdk = 29
@@ -52,10 +53,11 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
 
     // UI
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-core")
 
     // Navigation
     implementation(libs.navigation.compose)
@@ -66,9 +68,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     // Debug
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
