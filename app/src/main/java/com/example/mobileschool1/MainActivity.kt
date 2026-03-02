@@ -20,9 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
@@ -32,6 +29,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -55,7 +55,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.mobileschool1.models.TodoDetails
 import com.example.mobileschool1.models.TodoItem
+import com.example.mobileschool1.models.TodoList
 import com.example.mobileschool1.ui.theme.MobileSchool1Theme
 import kotlinx.serialization.Serializable
 
@@ -67,6 +70,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MobileSchool1Theme {
                 val navController = rememberNavController()
+                val todoItems = remember { mutableStateListOf<TodoItem>() }
+
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -74,14 +79,20 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "ToDoList"
+                        startDestination = TodoList
                     )
                     {
-                        composable("ToDoList"){
-                            TodoListScreen(modifier = Modifier.padding(innerPadding), navController = navController)
+                        composable<TodoList> {
+                            TodoListScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                navController = navController,
+                                todoItems = todoItems
+                            )
                         }
-                        composable("ToDoDetails"){
-                            Text(text = "Placeholder", modifier = Modifier.padding())
+                        composable<TodoDetails> {
+                            val todoDetails = it.toRoute<TodoDetails>()
+                            Text(text = todoDetails.text)
+                            // TODO: Make it pretty 
                         }
                     }
                 }
@@ -96,6 +107,7 @@ fun TodoItemCard(
     onToggleComplete: () -> Unit,
     onDelete: () -> Unit,
     onClick: () -> Unit
+    // TODO: Add description field
 ) {
     Card(
         onClick = onClick,
@@ -125,9 +137,12 @@ fun TodoItemCard(
 }
 
 @Composable
-fun TodoListScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun TodoListScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    todoItems: MutableList<TodoItem>
+) {
     var todoText by remember { mutableStateOf("") }
-    val todoItems = remember { mutableStateListOf<TodoItem>() }
 
     Column(
         modifier = Modifier
@@ -165,18 +180,25 @@ fun TodoListScreen(modifier: Modifier = Modifier, navController: NavController) 
             }
         }
 
+        // TODO: Add description text field 
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
             items(todoItems) { todoItem ->
-                TodoItemCard(todoItem, onToggleComplete = {
+                TodoItemCard(
+                    todoItem, onToggleComplete = {
                     val index = todoItems.indexOf(todoItem)
-                    todoItems[index] = todoItem.copy(isCompleted = !todoItem.isCompleted )
+                    todoItems[index] = todoItem.copy(isCompleted = !todoItem.isCompleted)
                 }, onDelete = {
                     todoItems.remove(todoItem)
                 },
                     onClick = {
-                        navController.navigate("ToDoDetails")
+                        navController.navigate(
+                            TodoDetails(
+                                text = todoItem.name,
+                                isCompleted = todoItem.isCompleted
+                            )
+                        )
                     })
             }
         }
